@@ -6,7 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    "target": "ESNext",
     "sourceMap": true,
     "incremental": true,
     "skipLibCheck": true,
@@ -22,6 +22,7 @@
       "@/configs/*": ["src/configs/*"],
       "@/modules/*": ["src/modules/*"],
       "@/commands/*": ["src/commands/*"],
+      "@/routes": ["src/constants/index.ts"],
       "@/utils/*": ["src/utils/*"],
     }
   }
