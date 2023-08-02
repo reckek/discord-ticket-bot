@@ -1,8 +1,9 @@
 import { ticketsSystemRoutes } from '@/constants'
 import { CommandSleepService } from '@/core/commandSleep'
 import { Injectable } from '@nestjs/common'
-import { ChannelType, ThreadAutoArchiveDuration } from 'discord.js'
+import { ChannelType, ThreadAutoArchiveDuration, roleMention, userMention } from 'discord.js'
 import { Button, ButtonContext, Context } from 'necord'
+import { API } from '../API'
 import { TicketsComponents } from './resources/ticketsSystem.components'
 import { TicketsEmbeds } from './resources/ticketsSystem.embeds'
 
@@ -58,10 +59,15 @@ export class TicketsSystemService {
       autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
     })
 
+    // Get support role id from database
+    const getRoleID = await API.guildAPIService.getSupportRole(interaction.guildId)
+
     // Send message to created thread
+    const _memberMention = userMention(member.id)
+    const _roleMention = getRoleID ? roleMention(getRoleID) : ''
+
     createdThread.send({
-      // TODO: Update on correct role ID
-      content: `<@${member.id}> <@&3123123123123123>`,
+      content: `${_memberMention} ${_roleMention}`,
       embeds: [this._embeds.ticketSuccessCreated(member)],
       components: [this._components.generateComponentCloseTicket()],
     })

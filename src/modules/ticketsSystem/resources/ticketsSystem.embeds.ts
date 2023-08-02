@@ -12,7 +12,7 @@ export class TicketsEmbeds {
 
   public ticketSuccessCreated(member: User): EmbedBuilder {
     return new EmbedBuilder({
-      title: `${member.username} created a ticket`,
+      title: `${member.username[0].toUpperCase() + member.username.slice(1)} created a ticket`,
       description: `You successfully created a ticket. We will be with you soon.`,
       footer: {
         text: 'You can close ticket by clicking the button below.',

@@ -34,4 +34,12 @@ export class CreateTicketSystemEmbeds {
       color: COLORS.SUCCESS,
     })
   }
+
+  public errorBySetTicketChannel(): EmbedBuilder {
+    return new EmbedBuilder({
+      title: 'Error',
+      description: 'Error in setting the ticket channel.',
+      color: COLORS.ERROR,
+    })
+  }
 }
