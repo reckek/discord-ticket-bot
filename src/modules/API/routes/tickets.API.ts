@@ -20,7 +20,7 @@ export class TicketsAPIService {
 
   async addTicket(threadID: Snowflake, ticketOptions: Partial<Omit<TicketEntity, 'threadID'>>): Promise<TicketEntity> {
     try {
-      const ticket = this.getTicket(threadID)
+      const ticket = await this.getTicket(threadID)
       if (ticket) return ticket
 
       const entity = new TicketEntity()

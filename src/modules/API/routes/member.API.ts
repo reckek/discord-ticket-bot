@@ -5,10 +5,12 @@ import { Logger } from '@nestjs/common'
 import { Snowflake } from 'discord.js'
 
 export class MemberAPIService {
-  private _logger = new Logger(MemberAPIService.name)
+  private _logger = new Logger(MemberAPIService.name, {
+    timestamp: true,
+  })
 
   async getMember(memberID: Snowflake): Promise<MemberEntity> {
-    return await MemberEntity.findOneBy({ memberID })
+    return (await MemberEntity.findOneBy({ memberID })) ?? undefined
   }
 
   async hasMember(memberID: Snowflake): Promise<boolean> {
@@ -17,14 +19,14 @@ export class MemberAPIService {
 
   async addMember(memberID: Snowflake, memberOptions?: { tickets?: TicketEntity[]; feedbacks?: FeedbackEntity[] }): Promise<MemberEntity> {
     try {
-      const member = this.getMember(memberID)
+      const member = await this.getMember(memberID)
       if (member) return member
 
       const entity = new MemberEntity()
 
       entity.memberID = memberID
-      entity.feedbacks = memberOptions.feedbacks ?? []
-      entity.tickets = memberOptions.tickets ?? []
+      entity.feedbacks = memberOptions?.feedbacks ?? []
+      entity.tickets = memberOptions?.tickets ?? []
 
       return await entity.save()
     } catch (err) {
@@ -34,7 +36,7 @@ export class MemberAPIService {
 
   async removeMember(memberID: Snowflake): Promise<MemberEntity> {
     try {
-      const entity = await MemberEntity.findOneBy({ memberID })
+      const entity = await this.getMember(memberID)
 
       return await entity.remove()
     } catch (err) {

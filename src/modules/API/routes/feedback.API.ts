@@ -26,7 +26,7 @@ export class FeedbackAPIService {
   }
 
   async getFeedbacks(): Promise<FeedbackEntity[]> {
-    return FeedbackEntity.find()
+    return await FeedbackEntity.find()
   }
 
   async addFeedback(memberID: Snowflake, feedback: Partial<Pick<FeedbackEntity, 'message' | 'evaluation'>>): Promise<FeedbackEntity> {

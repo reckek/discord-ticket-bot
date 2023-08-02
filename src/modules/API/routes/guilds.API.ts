@@ -15,19 +15,19 @@ export class GuildAPIService {
   }
 
   async getWelcomeChannel(guildID: Snowflake): Promise<Snowflake> {
-    return (await this.getGuild(guildID)).welcomeChannelID
+    return (await this.getGuild(guildID))?.welcomeChannelID
   }
 
   async getTicketChannel(guildID: Snowflake): Promise<Snowflake> {
-    return (await this.getGuild(guildID)).ticketChannelID
+    return (await this.getGuild(guildID))?.ticketChannelID
   }
 
   async getSupportRole(guildID: Snowflake): Promise<Snowflake> {
-    return (await this.getGuild(guildID)).supportRoleID
+    return (await this.getGuild(guildID))?.supportRoleID
   }
 
   async getFeedbackChannel(guildID: Snowflake): Promise<Snowflake> {
-    return (await this.getGuild(guildID)).feedbackChannelID
+    return (await this.getGuild(guildID))?.feedbackChannelID
   }
 
   async hasGuild(guildID: Snowflake): Promise<boolean> {
@@ -39,7 +39,7 @@ export class GuildAPIService {
     }
   }
 
-  async addGuild(guildID: Snowflake, guildOptions: Partial<Omit<IGuildEntity, 'guildID'>>): Promise<GuildEntity> {
+  async addGuild(guildID: Snowflake, guildOptions?: Partial<Omit<IGuildEntity, 'guildID'>>): Promise<GuildEntity> {
     try {
       const guildFromDB = await this.getGuild(guildID)
       if (guildFromDB) return guildFromDB
