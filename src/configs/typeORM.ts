@@ -1,6 +1,9 @@
+import { FeedbackEntity } from '@/typeORM/entity/feedbacks.entity'
 import { GuildEntity } from '@/typeORM/entity/guilds.entity'
+import { TicketEntity } from '@/typeORM/entity/tickets.entity'
 import { ConfigService } from '@nestjs/config'
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
+import { MemberEntity } from '../typeORM/entity/members.entity'
 
 export const typeORMConfig = (ConfigService: ConfigService): TypeOrmModuleOptions => ({
   type: 'postgres',
@@ -9,7 +12,7 @@ export const typeORMConfig = (ConfigService: ConfigService): TypeOrmModuleOption
   database: ConfigService.get('DB_NAME') || 'postgres',
   username: ConfigService.get('DB_USERNAME') || 'postgres',
   password: ConfigService.get('DB_PASSWORD') || 'postgres',
-  entities: [GuildEntity],
+  entities: [GuildEntity, MemberEntity, FeedbackEntity, TicketEntity],
   synchronize: true,
   retryDelay: 10000,
   logging: false,
