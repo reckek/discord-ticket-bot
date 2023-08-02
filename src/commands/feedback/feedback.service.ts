@@ -79,6 +79,8 @@ export class FeedbackService {
       interaction.editReply({
         embeds: [this._embeds.successFeedbackLeave(messageInChannel.channelId, messageInChannel.id)],
       })
+    } else {
+      interaction.deleteReply()
     }
 
     // Save feedback in sleep list for member
