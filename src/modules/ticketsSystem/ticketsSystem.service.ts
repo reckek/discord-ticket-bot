@@ -1,5 +1,6 @@
 import { ticketsSystemRoutes } from '@/constants'
 import { CommandSleepService } from '@/core/commandSleep'
+import { TicketStatus } from '@/types'
 import { Injectable } from '@nestjs/common'
 import { ChannelType, ThreadAutoArchiveDuration, roleMention, userMention } from 'discord.js'
 import { Button, ButtonContext, Context } from 'necord'
@@ -27,14 +28,20 @@ export class TicketsSystemService {
     const member = interaction.user
 
     // Get all active threads of a member
-    const [memberActiveThread] = (await threads.fetchActive()).members.filter(m => m.id === m.id)
+    const activeThreads = (await threads.fetchActive()).threads
+
+    // Select last active thread of a member
+    const lastOpenMemberThread = activeThreads
+      .filter(thread => {
+        const id = thread.name.slice(1).split(`-`)[0]
+        return id === member.id
+      })
+      .first()
 
     // If member there is active thread
-    if (memberActiveThread) {
-      const [memberID, memberThread] = memberActiveThread
-
+    if (lastOpenMemberThread) {
       interaction.reply({
-        embeds: [this._embeds.ticketIsOpened(memberThread.thread)],
+        embeds: [this._embeds.ticketIsOpened(lastOpenMemberThread)],
         ephemeral: true,
       })
 
@@ -76,11 +83,27 @@ export class TicketsSystemService {
       embeds: [this._embeds.ticketOpen(member, createdThread.id)],
       ephemeral: true,
     })
+
+    const ticket = await API.ticketsAPIService.addTicket(createdThread.id, {
+      status: TicketStatus.OPEN,
+      member: member.id,
+    })
   }
 
   @Button(ticketsSystemRoutes.buttonClose)
   public async onClickCloseTicket(@Context() [interaction]: ButtonContext) {
     if (interaction.channel.type !== ChannelType.PrivateThread) return
+
+    const ticket = await API.ticketsAPIService.getTicket(interaction.channel.id)
+    const staffRoleID = await API.guildAPIService.getSupportRole(interaction.guildId)
+    const memberRoles = interaction.member.roles
+
+    const isMemberNotOpenedTicket = !(ticket.member.memberID === interaction.user.id)
+    const isNotStaff = !(Array.isArray(memberRoles) ? memberRoles.includes(staffRoleID) : false)
+
+    if (isMemberNotOpenedTicket && isNotStaff) {
+      return
+    }
 
     await interaction.deferReply({
       ephemeral: true,
@@ -93,6 +116,8 @@ export class TicketsSystemService {
     await interaction.deleteReply()
 
     await interaction.channel.setArchived(true)
+
+    await API.ticketsAPIService.updateTicket(interaction.channel.id, { status: TicketStatus.CLOSED })
 
     this._sleep.addInBlackList(interaction.user.id)
   }
