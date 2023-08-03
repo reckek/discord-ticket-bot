@@ -5,8 +5,7 @@ import { Snowflake } from 'discord.js'
 
 export enum TicketStatus {
   OPEN = 0,
-  IN_PROGRESS = 1,
-  CLOSED = 2,
+  CLOSED = 1,
 }
 
 export enum FeedbackEvaluation {
