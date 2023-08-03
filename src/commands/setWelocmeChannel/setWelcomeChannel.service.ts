@@ -9,13 +9,12 @@ export class SetWelcomeChannelService {
   private _embeds = new SetWelcomeChannelEmbeds()
 
   async onUseCommand(interaction: ChatInputCommandInteraction): Promise<void> {
-    await interaction.deferReply()
+    await interaction.deferReply({ ephemeral: true })
 
     // Check on channel type
     if (interaction.channel.type !== ChannelType.GuildText) {
-      interaction.reply({
+      interaction.editReply({
         embeds: [this._embeds.errorByWrongChannelType()],
-        ephemeral: true,
       })
       return
     }
@@ -26,9 +25,8 @@ export class SetWelcomeChannelService {
     const guildFromBD = await API.guildAPIService.addGuild(guildID)
 
     if (!guildFromBD) {
-      interaction.reply({
+      interaction.editReply({
         embeds: [this._embeds.errorBySetWelcomeChannel()],
-        ephemeral: true,
       })
       return
     }
@@ -39,9 +37,8 @@ export class SetWelcomeChannelService {
     })
 
     // Send result to user
-    interaction.reply({
+    interaction.editReply({
       embeds: [res ? this._embeds.successSetWelcomeChannel() : this._embeds.errorBySetWelcomeChannel()],
-      ephemeral: true,
     })
   }
 }
