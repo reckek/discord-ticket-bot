@@ -9,7 +9,7 @@ export class MemberAPIService {
   })
 
   async getMember(memberID: Snowflake): Promise<MemberEntity> {
-    return (await MemberEntity.findOneBy({ memberID })) ?? undefined
+    return (await MemberEntity.findOne({ relations: { feedbacks: true, tickets: true }, where: { memberID } })) ?? undefined
   }
 
   async hasMember(memberID: Snowflake): Promise<boolean> {
