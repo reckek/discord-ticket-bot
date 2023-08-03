@@ -1,6 +1,6 @@
 import { COLORS } from '@/constants'
 import { IFeedbackEntity } from '@/types'
-import { EmbedBuilder, Snowflake, User, messageLink } from 'discord.js'
+import { EmbedBuilder, Snowflake, User, bold, messageLink, userMention } from 'discord.js'
 
 export class FeedbackEmbeds {
   feedback(user: User, ticket: Pick<IFeedbackEntity, 'evaluation' | 'message'>): EmbedBuilder {
@@ -30,6 +30,8 @@ export class FeedbackEmbeds {
     return new EmbedBuilder({
       title: `⭐ Review by ${user.username}`,
       description: `
+> ${bold('Author:')} ${userMention(user.id)}
+
 > ### Evaluation of support work:
 > ${evaluationFormatting}
 
