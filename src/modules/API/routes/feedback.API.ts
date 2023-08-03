@@ -41,10 +41,7 @@ export class FeedbackAPIService {
 
       await entity.save()
 
-      if (memberEntity) {
-        memberEntity.feedbacks.push(entity)
-        await memberEntity.save()
-      }
+      await API.memberAPIService.updateMember(memberID, { feedbacks: [entity] })
 
       return entity
     } catch (err) {
