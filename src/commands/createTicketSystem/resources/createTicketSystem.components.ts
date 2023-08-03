@@ -5,6 +5,7 @@ export class CreateTicketSystemComponents {
   public buttonCreateTicket(): ActionRowBuilder<ButtonBuilder> {
     const button = new ButtonBuilder({
       customId: ticketsSystemRoutes.buttonCreate,
+      emoji: '👉',
       label: 'Open a ticket',
       style: ButtonStyle.Success,
     })
