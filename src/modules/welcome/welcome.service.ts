@@ -11,6 +11,7 @@ export class WelcomeService {
   public async onGuildMemberAdd(member: GuildMember): Promise<void> {
     // Get welcome channel ID
     const welcomeChannelID = await API.guildAPIService.getWelcomeChannel(member.guild.id)
+    const ticketChannelID = await API.guildAPIService.getTicketChannel(member.guild.id)
 
     // If welcome channel doesn't exist
     if (!welcomeChannelID) return
@@ -24,6 +25,6 @@ export class WelcomeService {
     }
 
     // Send message in welcome channel
-    channel.send({ content: `What's up, ${userMention(member.id)}?`, embeds: [this._embeds.onMemberAdd()] })
+    channel.send({ content: `What's up, ${userMention(member.id)}?`, embeds: [this._embeds.onMemberAdd(ticketChannelID)] })
   }
 }
