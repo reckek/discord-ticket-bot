@@ -36,6 +36,13 @@ export class TicketsEmbeds {
     })
   }
 
+  public errorMemberNotExistPermission(): EmbedBuilder {
+    return new EmbedBuilder({
+      title: 'You have an unenclosed ticket!',
+      color: COLORS.DANGER,
+    })
+  }
+
   public ticketIsOpened(thread: AnyThreadChannel<false>): EmbedBuilder {
     return new EmbedBuilder({
       title: 'You have an unenclosed ticket!',

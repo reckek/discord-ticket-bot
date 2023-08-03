@@ -98,10 +98,15 @@ export class TicketsSystemService {
     const staffRoleID = await API.guildAPIService.getSupportRole(interaction.guildId)
     const memberRoles = interaction.member.roles
 
-    const isMemberNotOpenedTicket = !(ticket.member.memberID === interaction.user.id)
-    const isNotStaff = !(Array.isArray(memberRoles) ? memberRoles.includes(staffRoleID) : false)
+    const isMemberOpenedTicket = ticket?.member?.memberID === interaction.user.id
+    const isStaff = !Array.isArray(memberRoles) && Boolean(memberRoles.valueOf().find(role => role.id === staffRoleID))
+    const isGuildOwner = interaction.user.id === interaction.guild.ownerId
 
-    if (isMemberNotOpenedTicket && isNotStaff) {
+    if (!isMemberOpenedTicket && !isStaff && !isGuildOwner) {
+      interaction.reply({
+        embeds: [this._embeds.errorMemberNotExistPermission()],
+        ephemeral: true,
+      })
       return
     }
 
