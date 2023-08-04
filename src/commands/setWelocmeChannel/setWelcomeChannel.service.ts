@@ -22,7 +22,13 @@ export class SetWelcomeChannelService {
     const { guildId: guildID, channelId: channelID } = interaction
 
     // Create guild if it doesn't exist
-    const guildFromBD = await API.guildAPIService.addGuild(guildID)
+    const guildFromBD = !(await API.guildAPIService.getGuild(guildID))
+      ? await API.guildAPIService.addGuild(guildID, {
+          welcomeChannelID: channelID,
+        })
+      : await API.guildAPIService.updateGuild(guildID, {
+          welcomeChannelID: channelID,
+        })
 
     if (!guildFromBD) {
       interaction.editReply({

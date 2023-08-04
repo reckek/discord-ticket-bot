@@ -21,15 +21,20 @@ export class CreateTicketSystemService {
 
     const { channelId: channelID, guildId: guildID } = interaction
 
-    // Update setting bot in database
-    const res = await API.guildAPIService.updateGuild(guildID, {
-      ticketChannelID: channelID,
-      supportRoleID: role.id,
-    })
+    // Create guild if it doesn't exist, create
+    const result = !(await API.guildAPIService.getGuild(guildID))
+      ? await API.guildAPIService.addGuild(guildID, {
+          ticketChannelID: channelID,
+          supportRoleID: role.id,
+        })
+      : await API.guildAPIService.updateGuild(guildID, {
+          ticketChannelID: channelID,
+          supportRoleID: role.id,
+        })
 
     setTimeout(async () => {
       // Send message success by success update ticket channel and initialize ticket system
-      if (res) {
+      if (result) {
         // Remove replay message
         await interaction.deleteReply()
 

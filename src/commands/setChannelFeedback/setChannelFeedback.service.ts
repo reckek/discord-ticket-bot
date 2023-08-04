@@ -22,10 +22,14 @@ export class SetFeedbackChannelService {
 
     const { guildId: guildID, channelId: channelID } = interaction
 
-    // Update feedback channel
-    const res = await API.guildAPIService.updateGuild(guildID, {
-      feedbackChannelID: channelID,
-    })
+    // Create guild if it doesn't exist
+    const res = !(await API.guildAPIService.addGuild(guildID))
+      ? await API.guildAPIService.addGuild(guildID, {
+          feedbackChannelID: channelID,
+        })
+      : await API.guildAPIService.updateGuild(guildID, {
+          feedbackChannelID: channelID,
+        })
 
     if (res) {
       interaction.editReply({
