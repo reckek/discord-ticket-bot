@@ -29,7 +29,7 @@ export class TicketsAPIService {
       entity.threadID = threadID
       entity.status = ticketOptions.status ?? TicketStatus.OPEN
 
-      const member = await API.memberAPIService.getMember(ticketOptions.member)
+      const member = await API.memberAPIService.addMember(ticketOptions.member)
       entity.member = member
 
       return await entity.save()

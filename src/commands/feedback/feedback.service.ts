@@ -31,6 +31,8 @@ export class FeedbackService {
 
     const { guildId: guildID } = interaction
 
+    await API.guildAPIService.addGuild(guildID)
+
     // Get feedback channel ID from DB
     const feedbackChannelID = await API.guildAPIService.getFeedbackChannel(guildID)
 

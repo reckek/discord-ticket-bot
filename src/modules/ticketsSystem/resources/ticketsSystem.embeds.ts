@@ -38,15 +38,22 @@ export class TicketsEmbeds {
 
   public errorMemberNotExistPermission(): EmbedBuilder {
     return new EmbedBuilder({
-      title: 'You have an unenclosed ticket!',
+      title: 'You do not have sufficient rights to close the ticket!',
       color: COLORS.DANGER,
     })
   }
 
   public ticketIsOpened(thread: AnyThreadChannel<false>): EmbedBuilder {
     return new EmbedBuilder({
-      title: 'You have an unenclosed ticket!',
+      title: 'You already have 1 open ticket!',
       description: `Ticket: <#${thread.id}>`,
+      color: COLORS.DANGER,
+    })
+  }
+
+  public errorTicketOpen(): EmbedBuilder {
+    return new EmbedBuilder({
+      title: 'We apologize, we were unable to open the tike!',
       color: COLORS.DANGER,
     })
   }
