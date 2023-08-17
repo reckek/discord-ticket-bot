@@ -14,6 +14,9 @@ export class GuildEntity extends BaseEntity implements IGuildEntity {
   welcomeChannelID: Snowflake
 
   @Column({ type: 'text', unique: true, nullable: true })
+  welcomeRoleID: Snowflake
+
+  @Column({ type: 'text', unique: true, nullable: true })
   supportRoleID: Snowflake
 
   @Column({ type: 'text', unique: true, nullable: true })

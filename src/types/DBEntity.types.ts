@@ -20,6 +20,7 @@ export interface IGuildEntity {
   guildID: Snowflake
   supportRoleID: Snowflake | null
   welcomeChannelID: Snowflake | null
+  welcomeRoleID: Snowflake | null
   ticketChannelID: Snowflake | null
   feedbackChannelID: Snowflake | null
 }

@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { Context, SlashCommand, SlashCommandContext } from 'necord'
+import { Context, Options, SlashCommand, SlashCommandContext } from 'necord'
 import { SetWelcomeChannelService } from './setWelcomeChannel.service'
+import { SetWelcomeChannelOptions } from './DTO/options'
 
 @Injectable()
 export class SetWelcomeChannelCommand {
@@ -12,7 +13,7 @@ export class SetWelcomeChannelCommand {
     dmPermission: false,
     defaultMemberPermissions: ['Administrator'],
   })
-  public onUseCommand(@Context() [interaction]: SlashCommandContext) {
-    this._service.onUseCommand(interaction)
+  public onUseCommand(@Context() [interaction]: SlashCommandContext, @Options() { role }: SetWelcomeChannelOptions) {
+    this._service.onUseCommand(interaction, role)
   }
 }
