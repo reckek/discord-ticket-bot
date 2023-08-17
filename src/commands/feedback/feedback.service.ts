@@ -3,7 +3,7 @@ import { CommandSleepService } from '@/core/commandSleep'
 import { API } from '@/modules/API'
 import { FeedbackEvaluation } from '@/types'
 import { Injectable, Logger } from '@nestjs/common'
-import { ChannelType, ChatInputCommandInteraction } from 'discord.js'
+import { ChannelType, ChatInputCommandInteraction, Message } from 'discord.js'
 import { FeedbackOptions } from './DTO/options.DTO'
 import { FeedbackEmbeds } from './resources/feedback.embeds'
 
@@ -16,10 +16,14 @@ export class FeedbackService {
   async onUseCommand(interaction: ChatInputCommandInteraction, { evaluation, message }: FeedbackOptions) {
     // Check on sleep before use command, if user is in black list do not use command
     if (this._commandSleep.isMemberInBlackList(interaction.user.id)) {
-      interaction.reply({
-        embeds: [this._embeds.errorFeedbackSleepCommand()],
-        ephemeral: true,
-      })
+      interaction
+        .reply({
+          embeds: [this._embeds.errorFeedbackSleepCommand()],
+          ephemeral: true,
+        })
+        .finally(() => {
+          this._logger.log('Command sleep for member', `Member id: ${interaction.user.id}`)
+        })
 
       return
     }
@@ -72,9 +76,20 @@ export class FeedbackService {
     }
 
     // Send feedback
-    const messageInChannel = await channel.send({
-      embeds: [this._embeds.feedback(interaction.user, { evaluation: evaluationTransformed, message })],
-    })
+    const messageInChannel: Message | null = await channel
+      .send({
+        embeds: [this._embeds.feedback(interaction.user, { evaluation: evaluationTransformed, message })],
+      })
+      .then(message => {
+        this._logger.log('Send feedback', `Member id: ${interaction.user.id}`, `Message id: ${message.id}`, `Channel id: ${channel.id}`)
+        return message
+      })
+      .catch(err => {
+        this._logger.error('Failed to send feedback', err)
+        return null
+      })
+
+    if (!messageInChannel) return
 
     // Reply message if message in feedback channel
     if (interaction.channelId !== feedbackChannelID) {
@@ -85,14 +100,14 @@ export class FeedbackService {
       interaction.deleteReply()
     }
 
-    // Save feedback in sleep list for member
+    // Save member in sleep list for command feedback
     this._commandSleep.addInBlackList(interaction.user.id, { ttl: CommandSleepTTL['6h'] })
 
     // Update message ID in feedback
     const result = await API.feedbackAPIService.updateFeedback(feedback.feedbackID, { messageID: messageInChannel.id })
 
     if (!result) {
-      this._logger.error('Failed to save channel ID in feedback')
+      this._logger.error('Failed to save feedback in DB')
     }
   }
 }

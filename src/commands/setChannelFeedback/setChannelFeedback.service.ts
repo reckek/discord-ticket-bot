@@ -1,22 +1,25 @@
 import { API } from '@/modules/API'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { ChannelType, ChatInputCommandInteraction } from 'discord.js'
 import { SetChannelFeedbackEmbed } from './resources/setChannelFeedback.embeds'
 
 @Injectable()
 export class SetFeedbackChannelService {
   private _embeds = new SetChannelFeedbackEmbed()
+  private _logger = new Logger(SetFeedbackChannelService.name)
 
   public async onUseCommand(interaction: ChatInputCommandInteraction): Promise<void> {
     // Show action bot
     await interaction.deferReply({ ephemeral: true })
+
+    this._logger.log('Start set feedback channel')
 
     // Check on text channel type
     if (interaction.channel.type !== ChannelType.GuildText) {
       interaction.editReply({
         embeds: [this._embeds.errorIncorrectChannelType()],
       })
-
+      this._logger.error('Error in setting the feedback channel, wrong channel type')
       return
     }
 
@@ -32,13 +35,21 @@ export class SetFeedbackChannelService {
         })
 
     if (res) {
-      interaction.editReply({
-        embeds: [this._embeds.successSetChannel()],
-      })
+      interaction
+        .editReply({
+          embeds: [this._embeds.successSetChannel()],
+        })
+        .finally(() => {
+          this._logger.log('Finish set feedback channel')
+        })
     } else {
-      interaction.editReply({
-        embeds: [this._embeds.errorBySetChannel()],
-      })
+      interaction
+        .editReply({
+          embeds: [this._embeds.errorBySetChannel()],
+        })
+        .finally(() => {
+          this._logger.error('Error in setting the feedback channel')
+        })
     }
   }
 }
