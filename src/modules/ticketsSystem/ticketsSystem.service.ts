@@ -160,7 +160,7 @@ export class TicketsSystemService {
       }
 
       thread.send({
-        embeds: [this._embeds.ticketClose()],
+        embeds: [this._embeds.ticketClose(user)],
       })
 
       await interaction.deleteReply()

@@ -1,5 +1,5 @@
 import { COLORS } from '@/constants'
-import { AnyThreadChannel, EmbedBuilder, Snowflake, User } from 'discord.js'
+import { AnyThreadChannel, EmbedBuilder, Snowflake, User, userMention } from 'discord.js'
 
 export class TicketsEmbeds {
   public ticketOpen(member: User, ticketChannelID: Snowflake): EmbedBuilder {
@@ -21,10 +21,11 @@ export class TicketsEmbeds {
     })
   }
 
-  public ticketClose(): EmbedBuilder {
+  public ticketClose(member: User): EmbedBuilder {
     return new EmbedBuilder({
       title: 'Ticket closed!',
       timestamp: new Date().getTime(),
+      description: `Ticket close: ${userMention(member.id)}`,
       color: COLORS.INFO,
     })
   }
