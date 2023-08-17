@@ -12,6 +12,7 @@ export class CreateTicketSystemService {
   async onUseCommand(interaction: ChatInputCommandInteraction, role: Role) {
     await interaction.deferReply({ ephemeral: true })
 
+    this._logger.log('-'.repeat(30))
     this._logger.log('Start create ticket system')
 
     // Check on channel type

@@ -14,6 +14,9 @@ export class FeedbackService {
   private _commandSleep = new CommandSleepService()
 
   async onUseCommand(interaction: ChatInputCommandInteraction, { evaluation, message }: FeedbackOptions) {
+    this._logger.log('-'.repeat(30))
+    this._logger.log('Start: command feedback on use')
+
     // Check on sleep before use command, if user is in black list do not use command
     if (this._commandSleep.isMemberInBlackList(interaction.user.id)) {
       interaction
@@ -22,7 +25,7 @@ export class FeedbackService {
           ephemeral: true,
         })
         .finally(() => {
-          this._logger.log('Command sleep for member', `Member id: ${interaction.user.id}`)
+          this._logger.log('Finally: Command sleep for member', `Member id: ${interaction.user.id}`)
         })
 
       return

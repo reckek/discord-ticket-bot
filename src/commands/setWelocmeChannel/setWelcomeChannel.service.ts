@@ -11,7 +11,8 @@ export class SetWelcomeChannelService {
   async onUseCommand(interaction: ChatInputCommandInteraction, role: Role): Promise<void> {
     await interaction.deferReply({ ephemeral: true })
 
-    this._logger.log('Start set welcome channel and welcome role')
+    this._logger.log('-'.repeat(30))
+    this._logger.log('Start: Set welcome channel and welcome role')
 
     // Check on channel type
     if (interaction.channel.type !== ChannelType.GuildText) {

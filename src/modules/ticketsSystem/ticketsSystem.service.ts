@@ -24,6 +24,7 @@ export class TicketsSystemService {
   @Button(ticketsSystemRoutes.buttonCreate)
   public async onClickCreateTicket(@Context() [interaction]: ButtonContext) {
     try {
+      this._logger.log('-'.repeat(30))
       this._logger.log('Start create ticket')
 
       const { channel, user: member } = interaction
@@ -131,6 +132,7 @@ export class TicketsSystemService {
         ephemeral: true,
       })
 
+      this._logger.log('-'.repeat(30))
       this._logger.log('Start close ticket')
 
       // Is type guard check on channel type

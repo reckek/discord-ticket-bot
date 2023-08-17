@@ -9,12 +9,13 @@ export class WelcomeService {
   private _embeds = new WelcomeEmbeds()
 
   public async onGuildMemberAdd(member: GuildMember): Promise<void> {
+    this._logger.log('-'.repeat(30))
+    this._logger.log('Member join to guild', member.id)
+
     // Get welcome channel ID
     const welcomeChannelID = await API.guildAPIService.getWelcomeChannel(member.guild.id)
     const welcomeRoleID = await API.guildAPIService.getWelcomeRole(member.guild.id)
     const ticketChannelID = await API.guildAPIService.getTicketChannel(member.guild.id)
-
-    this._logger.log('Member join to guild', member.id)
 
     // Set welcome role to member
     if (welcomeRoleID) {

@@ -12,7 +12,8 @@ export class SetFeedbackChannelService {
     // Show action bot
     await interaction.deferReply({ ephemeral: true })
 
-    this._logger.log('Start set feedback channel')
+    this._logger.log('-'.repeat(30))
+    this._logger.log('Start: Set feedback channel')
 
     // Check on text channel type
     if (interaction.channel.type !== ChannelType.GuildText) {
