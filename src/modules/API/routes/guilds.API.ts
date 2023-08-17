@@ -18,6 +18,10 @@ export class GuildAPIService {
     return (await this.getGuild(guildID))?.welcomeChannelID
   }
 
+  async getWelcomeRole(guildID: Snowflake): Promise<Snowflake> {
+    return (await this.getGuild(guildID))?.welcomeRoleID
+  }
+
   async getTicketChannel(guildID: Snowflake): Promise<Snowflake> {
     return (await this.getGuild(guildID))?.ticketChannelID
   }
