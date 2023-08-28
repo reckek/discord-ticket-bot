@@ -1,4 +1,4 @@
-import { IGuildEntity } from '@/types'
+import { IGuildEntity } from '@/types/DBEntity.types'
 import { Snowflake } from 'discord.js'
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 

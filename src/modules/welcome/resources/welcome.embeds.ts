@@ -1,4 +1,4 @@
-import { COLORS } from '@/constants'
+import { COLORS } from '@/constants/colors'
 import { EmbedBuilder, Snowflake, bold, channelMention } from 'discord.js'
 
 export class WelcomeEmbeds {

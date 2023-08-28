@@ -5,8 +5,7 @@ import { PaymentsService } from './payment.service'
 
 @Injectable()
 export class PaymentsCommand {
-  constructor(@Inject(ConfigService) private readonly _config: ConfigService) {}
-  private _service = new PaymentsService()
+  constructor(@Inject(ConfigService) private readonly _config: ConfigService, private readonly _service: PaymentsService) {}
 
   @SlashCommand({
     name: 'payments',

@@ -1,22 +1,22 @@
 import { MemberEntity } from '@/typeORM/entity/members.entity'
-import { IMemberEntity } from '@/types'
+import { IMemberEntity } from '@/types/DBEntity.types'
 import { Logger } from '@nestjs/common'
 import { Snowflake } from 'discord.js'
 
 export class MemberAPIService {
-  private _logger = new Logger(MemberAPIService.name, {
+  private static _logger = new Logger(MemberAPIService.name, {
     timestamp: true,
   })
 
-  async getMember(memberID: Snowflake): Promise<MemberEntity> {
+  public static async getMember(memberID: Snowflake): Promise<MemberEntity> {
     return (await MemberEntity.findOne({ relations: { feedbacks: true, tickets: true }, where: { memberID } })) ?? undefined
   }
 
-  async hasMember(memberID: Snowflake): Promise<boolean> {
+  public static async hasMember(memberID: Snowflake): Promise<boolean> {
     return !!(await this.getMember(memberID))
   }
 
-  async addMember(memberID: Snowflake, memberOptions?: Partial<MemberEntity>): Promise<MemberEntity> {
+  public static async addMember(memberID: Snowflake, memberOptions?: Partial<MemberEntity>): Promise<MemberEntity> {
     try {
       const member = await this.getMember(memberID)
       if (member) return member
@@ -32,7 +32,7 @@ export class MemberAPIService {
     }
   }
 
-  async updateMember(memberID: Snowflake, updateData: Partial<Omit<IMemberEntity, 'memberID'>>) {
+  public static async updateMember(memberID: Snowflake, updateData: Partial<Omit<IMemberEntity, 'memberID'>>) {
     const entity = await this.getMember(memberID)
 
     if (!entity) return
@@ -52,7 +52,7 @@ export class MemberAPIService {
     return await entity.save()
   }
 
-  async removeMember(memberID: Snowflake): Promise<MemberEntity> {
+  public static async removeMember(memberID: Snowflake): Promise<MemberEntity> {
     try {
       const entity = await this.getMember(memberID)
 

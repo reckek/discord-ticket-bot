@@ -1,18 +1,18 @@
 import { FeedbackEntity } from '@/typeORM/entity/feedbacks.entity'
 import { MemberEntity } from '@/typeORM/entity/members.entity'
-import { FeedbackEvaluation, IFeedbackEntity } from '@/types'
+import { FeedbackEvaluation, IFeedbackEntity } from '@/types/DBEntity.types'
 import { Logger } from '@nestjs/common'
 import { Snowflake } from 'discord.js'
-import { API } from '../API.service'
+import { MemberAPIService } from './member.API'
 
 export class FeedbackAPIService {
-  private _logger = new Logger(FeedbackAPIService.name)
+  private static _logger = new Logger(FeedbackAPIService.name)
 
-  async getFeedback(feedbackID: number): Promise<FeedbackEntity> {
+  public static async getFeedback(feedbackID: number): Promise<FeedbackEntity> {
     return await FeedbackEntity.findOneBy({ feedbackID })
   }
 
-  async getAllMemberFeedbacks(memberID: Snowflake): Promise<FeedbackEntity[]> {
+  public static async getAllMemberFeedbacks(memberID: Snowflake): Promise<FeedbackEntity[]> {
     const memberAndConnectedFeedbacks = await MemberEntity.findOne({
       relations: {
         feedbacks: true,
@@ -25,13 +25,16 @@ export class FeedbackAPIService {
     return memberAndConnectedFeedbacks.feedbacks
   }
 
-  async getFeedbacks(): Promise<FeedbackEntity[]> {
+  public static async getFeedbacks(): Promise<FeedbackEntity[]> {
     return await FeedbackEntity.find()
   }
 
-  async addFeedback(memberID: Snowflake, feedback: Partial<Pick<FeedbackEntity, 'message' | 'evaluation'>>): Promise<FeedbackEntity> {
+  public static async addFeedback(
+    memberID: Snowflake,
+    feedback: Partial<Pick<FeedbackEntity, 'message' | 'evaluation'>>,
+  ): Promise<FeedbackEntity> {
     try {
-      const memberEntity = await API.memberAPIService.addMember(memberID)
+      const memberEntity = await MemberAPIService.addMember(memberID)
 
       const entity = new FeedbackEntity()
 
@@ -41,7 +44,7 @@ export class FeedbackAPIService {
 
       await entity.save()
 
-      await API.memberAPIService.updateMember(memberID, { feedbacks: [entity] })
+      await MemberAPIService.updateMember(memberID, { feedbacks: [entity] })
 
       return entity
     } catch (err) {
@@ -49,7 +52,10 @@ export class FeedbackAPIService {
     }
   }
 
-  async updateFeedback(feedbackID: number, updateData: Partial<Omit<IFeedbackEntity, 'feedbackID'>>): Promise<FeedbackEntity> {
+  public static async updateFeedback(
+    feedbackID: number,
+    updateData: Partial<Omit<IFeedbackEntity, 'feedbackID'>>,
+  ): Promise<FeedbackEntity> {
     const entity = await FeedbackEntity.findOneBy({ feedbackID })
 
     entity.evaluation = updateData.evaluation ?? entity.evaluation
@@ -60,7 +66,7 @@ export class FeedbackAPIService {
     return await entity.save()
   }
 
-  async removeFeedback(feedbackID: number): Promise<FeedbackEntity> {
+  public static async removeFeedback(feedbackID: number): Promise<FeedbackEntity> {
     return (await FeedbackEntity.findOneBy({ feedbackID }))?.remove()
   }
 }

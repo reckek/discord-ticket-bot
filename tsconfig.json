@@ -18,13 +18,14 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
       "@/configs/*": ["src/configs/*"],
+      "@/core/*": ["src/core/*"],
       "@/modules/*": ["src/modules/*"],
       "@/commands/*": ["src/commands/*"],
       "@/types/*": ["src/types/*"],
-      "@/routes": ["src/constants/index.ts"],
+      "@/constants/*": ["src/constants/*"],
       "@/utils/*": ["src/utils/*"],
+      "@/typeORM/*": ["src/typeORM/*"]
     }
   }
 }

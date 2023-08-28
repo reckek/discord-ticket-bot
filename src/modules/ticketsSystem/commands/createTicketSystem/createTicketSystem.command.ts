@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { Context, Options, SlashCommand, SlashCommandContext } from 'necord'
 import { CreateTicketSystemOptions } from './DTO/options'
 import { CreateTicketSystemService } from './createTicketSystem.service'
 
 @Injectable()
 export class CreateTicketSystem {
-  private _service = new CreateTicketSystemService()
+  constructor(@Inject(CreateTicketSystemService) private readonly _service: CreateTicketSystemService) {}
 
   @SlashCommand({
     name: 'create-ticket-system',

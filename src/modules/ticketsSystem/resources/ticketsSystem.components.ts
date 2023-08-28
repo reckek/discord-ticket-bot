@@ -1,4 +1,4 @@
-import { ticketsSystemRoutes } from '@/constants'
+import { ticketsSystemRoutes } from '@/constants/routes'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
 
 export class TicketsComponents {

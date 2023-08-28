@@ -1,4 +1,4 @@
-import { COLORS } from '@/constants'
+import { COLORS } from '@/constants/colors'
 import { AnyThreadChannel, EmbedBuilder, Snowflake, User, userMention } from 'discord.js'
 
 export class TicketsEmbeds {

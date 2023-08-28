@@ -1,12 +1,12 @@
 import { GuildEntity } from '@/typeORM/entity/guilds.entity'
-import { IGuildEntity } from '@/types'
+import { IGuildEntity } from '@/types/DBEntity.types'
 import { Logger } from '@nestjs/common'
 import { Snowflake } from 'discord.js'
 
 export class GuildAPIService {
-  private _logger = new Logger(GuildAPIService.name)
+  private static _logger = new Logger(GuildAPIService.name)
 
-  async getGuild(guildID: Snowflake): Promise<GuildEntity> {
+  public static async getGuild(guildID: Snowflake): Promise<GuildEntity> {
     try {
       return await GuildEntity.findOneBy({ guildID: guildID })
     } catch (err) {
@@ -14,27 +14,27 @@ export class GuildAPIService {
     }
   }
 
-  async getWelcomeChannel(guildID: Snowflake): Promise<Snowflake> {
+  public static async getWelcomeChannel(guildID: Snowflake): Promise<Snowflake> {
     return (await this.getGuild(guildID))?.welcomeChannelID
   }
 
-  async getWelcomeRole(guildID: Snowflake): Promise<Snowflake> {
+  public static async getWelcomeRole(guildID: Snowflake): Promise<Snowflake> {
     return (await this.getGuild(guildID))?.welcomeRoleID
   }
 
-  async getTicketChannel(guildID: Snowflake): Promise<Snowflake> {
+  public static async getTicketChannel(guildID: Snowflake): Promise<Snowflake> {
     return (await this.getGuild(guildID))?.ticketChannelID
   }
 
-  async getSupportRole(guildID: Snowflake): Promise<Snowflake> {
+  public static async getSupportRole(guildID: Snowflake): Promise<Snowflake> {
     return (await this.getGuild(guildID))?.supportRoleID
   }
 
-  async getFeedbackChannel(guildID: Snowflake): Promise<Snowflake> {
+  public static async getFeedbackChannel(guildID: Snowflake): Promise<Snowflake> {
     return (await this.getGuild(guildID))?.feedbackChannelID
   }
 
-  async hasGuild(guildID: Snowflake): Promise<boolean> {
+  public static async hasGuild(guildID: Snowflake): Promise<boolean> {
     try {
       return !!(await this.getGuild(guildID))
     } catch (err) {
@@ -43,7 +43,7 @@ export class GuildAPIService {
     }
   }
 
-  async addGuild(guildID: Snowflake, guildOptions?: Partial<Omit<IGuildEntity, 'guildID'>>): Promise<GuildEntity> {
+  public static async addGuild(guildID: Snowflake, guildOptions?: Partial<Omit<IGuildEntity, 'guildID'>>): Promise<GuildEntity> {
     try {
       const guildFromDB = await this.getGuild(guildID)
       if (guildFromDB) return guildFromDB
@@ -62,7 +62,7 @@ export class GuildAPIService {
     }
   }
 
-  async updateGuild(guildID: Snowflake, guild: Partial<Omit<IGuildEntity, 'guildID'>>): Promise<GuildEntity> {
+  public static async updateGuild(guildID: Snowflake, guild: Partial<Omit<IGuildEntity, 'guildID'>>): Promise<GuildEntity> {
     try {
       const entity = await GuildEntity.findOne({ select: ['guildID'], where: { guildID } })
 
@@ -76,7 +76,7 @@ export class GuildAPIService {
     }
   }
 
-  async removeGuild(guildID: Snowflake): Promise<GuildEntity> {
+  public static async removeGuild(guildID: Snowflake): Promise<GuildEntity> {
     try {
       const entity = await GuildEntity.findOne({ select: ['guildID'], where: { guildID } })
 

@@ -1,4 +1,4 @@
-import { IMemberEntity } from '@/types'
+import { IMemberEntity } from '@/types/DBEntity.types'
 import { Snowflake } from 'discord.js'
 import { BaseEntity, Entity, OneToMany, PrimaryColumn } from 'typeorm'
 import { FeedbackEntity } from './feedbacks.entity'

@@ -1,4 +1,4 @@
-import type { FeedbackEvaluation, IFeedbackEntity } from '@/types'
+import type { FeedbackEvaluation, IFeedbackEntity } from '@/types/DBEntity.types'
 import { Snowflake } from 'discord.js'
 import { BaseEntity, Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { MemberEntity } from './members.entity'

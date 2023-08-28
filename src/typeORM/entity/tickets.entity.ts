@@ -1,4 +1,4 @@
-import { ITicketEntity, TicketStatus } from '@/types'
+import { ITicketEntity, TicketStatus } from '@/types/DBEntity.types'
 import { Snowflake } from 'discord.js'
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm'
 import { MemberEntity } from './members.entity'

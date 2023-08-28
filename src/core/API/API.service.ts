@@ -3,9 +3,9 @@ import { GuildAPIService } from './routes/guilds.API'
 import { MemberAPIService } from './routes/member.API'
 import { TicketsAPIService } from './routes/tickets.API'
 
-export const API = {
-  guildAPIService: new GuildAPIService(),
-  memberAPIService: new MemberAPIService(),
-  ticketsAPIService: new TicketsAPIService(),
-  feedbackAPIService: new FeedbackAPIService(),
+export class APIService {
+  public guildAPIService = GuildAPIService
+  public memberAPIService = MemberAPIService
+  public ticketsAPIService = TicketsAPIService
+  public feedbackAPIService = FeedbackAPIService
 }

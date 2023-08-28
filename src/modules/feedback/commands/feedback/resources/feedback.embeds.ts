@@ -1,11 +1,11 @@
-import { COLORS } from '@/constants'
-import { IFeedbackEntity } from '@/types'
+import { COLORS } from '@/constants/colors'
+import { IFeedbackEntity } from '@/types/DBEntity.types'
 import { EmbedBuilder, Snowflake, User, bold, messageLink, userMention } from 'discord.js'
 
 export class FeedbackEmbeds {
   feedback(user: User, ticket: Pick<IFeedbackEntity, 'evaluation' | 'message'>): EmbedBuilder {
     let evaluationFormatting: string
-
+    ;``
     switch (ticket.evaluation) {
       case 1:
         evaluationFormatting = '⭐'

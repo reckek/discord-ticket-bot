@@ -1,8 +1,8 @@
-import { ticketsSystemRoutes } from '@/constants'
+import { ticketsSystemRoutes } from '@/constants/routes'
 import { CommandSleepService } from '@/core/commandSleep'
-import { API } from '@/modules/API'
-import { TicketStatus } from '@/types'
-import { Injectable, Logger } from '@nestjs/common'
+import { APIService } from '@/core/API'
+import { TicketStatus } from '@/types/DBEntity.types'
+import { Inject, Injectable, Logger } from '@nestjs/common'
 import {
   ChannelType,
   ThreadAutoArchiveDuration,
@@ -21,6 +21,8 @@ export class TicketsSystemService {
   private _components = new TicketsComponents()
   private _sleep = new CommandSleepService()
 
+  constructor(@Inject(APIService) private readonly _apiService: APIService) {}
+
   @Button(ticketsSystemRoutes.buttonCreate)
   public async onClickCreateTicket(@Context() [interaction]: ButtonContext) {
     try {
@@ -32,15 +34,15 @@ export class TicketsSystemService {
       // is type guard for textChannel
       if (channel.type !== ChannelType.GuildText) return
 
-      const guildFromDB = await API.guildAPIService.addGuild(interaction.guildId)
+      const guild = await this._apiService.guildAPIService.addGuild(interaction.guildId)
 
-      if (!guildFromDB || !guildFromDB.ticketChannelID || !guildFromDB.supportRoleID) {
-        this._logger.error('ticket channel not found or support role not found')
+      if (!guild || !guild.ticketChannelID || !guild.supportRoleID) {
         interaction.reply({
           embeds: [this._embeds.errorTicketOpen()],
           ephemeral: true,
         })
-        return
+
+        throw new Error('ticket channel not found or support role not found')
       }
 
       // Get all active threads of a member
@@ -60,8 +62,8 @@ export class TicketsSystemService {
           embeds: [this._embeds.ticketIsOpened(lastOpenThreadOfMember)],
           ephemeral: true,
         })
-        this._logger.log('Finally: member already have open ticket')
-        return
+
+        throw new Error('Finally: member already have open ticket')
       }
 
       // Get all threads of a member
@@ -76,25 +78,18 @@ export class TicketsSystemService {
       })
 
       // Create new private thread
-      const createdThread: ThreadChannel | null = await channel.threads
-        .create({
-          name: `#${member.id}-${numberLastClosedThread + 1}`,
-          type: ChannelType.PrivateThread,
-          autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
-        })
-        .then(thread => {
-          this._logger.log('Private thread created', `Thread ID: ${thread.id}`, `Member ID: ${member.id}`)
-          return thread
-        })
-        .catch(err => {
-          this._logger.error('Cannot create private thread', err)
-          return null
-        })
+      const createdThread: ThreadChannel = await channel.threads.create({
+        name: `#${member.id}-${numberLastClosedThread + 1}`,
+        type: ChannelType.PrivateThread,
+        autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+      })
 
-      if (!createdThread) return
+      if (!createdThread) throw new Error('Cannot create private thread', { cause: createdThread })
+
+      this._logger.log('Private thread created', `Thread ID: ${createdThread.id}`, `Member ID: ${member.id}`)
 
       // Get support role id from database
-      const supportRoleID = await API.guildAPIService.getSupportRole(interaction.guildId)
+      const supportRoleID = await this._apiService.guildAPIService.getSupportRole(interaction.guildId)
 
       // Send message to created thread
       const memberMention = userMentionString(member.id)
@@ -112,14 +107,12 @@ export class TicketsSystemService {
       })
 
       // Create ticket in DB
-      const ticket = await API.ticketsAPIService.addTicket(createdThread.id, {
+      const ticket = await this._apiService.ticketsAPIService.addTicket(createdThread.id, {
         status: TicketStatus.OPEN,
         member: member.id,
       })
 
-      if (!ticket) {
-        this._logger.error('Cannot create ticket in database')
-      }
+      if (!ticket) throw new Error('Cannot create ticket in database')
     } catch (err) {
       this._logger.error(err)
     }
@@ -141,8 +134,11 @@ export class TicketsSystemService {
       const { user, member, channel: thread } = interaction
 
       // Get members
-      const ticket = await API.ticketsAPIService.getTicket(interaction.channel.id)
-      const staffRoleID = await API.guildAPIService.getSupportRole(interaction.guildId)
+      const [ticket, staffRoleID] = await Promise.all([
+        this._apiService.ticketsAPIService.getTicket(interaction.channel.id),
+        this._apiService.guildAPIService.getSupportRole(interaction.guildId),
+      ])
+
       const ownerID = interaction.guild.ownerId
       const memberRoles = member.roles
 
@@ -155,7 +151,9 @@ export class TicketsSystemService {
         interaction.editReply({
           embeds: [this._embeds.errorMemberNotExistPermission()],
         })
-        this._logger.error('Finally: Member do not have permission to close ticket', `Member id: ${user.id}`)
+
+        this._logger.log('Finally: Member do not have permission to close ticket', `Member id: ${user.id}`)
+
         return
       }
 
@@ -165,11 +163,13 @@ export class TicketsSystemService {
 
       await interaction.deleteReply()
 
-      await thread.setArchived(true)
+      if (!thread.archived) {
+        await thread.setArchived(true)
 
-      await API.ticketsAPIService.updateTicket(thread.id, { status: TicketStatus.CLOSED })
+        await this._apiService.ticketsAPIService.updateTicket(thread.id, { status: TicketStatus.CLOSED })
 
-      this._sleep.addInBlackList(interaction.user.id)
+        this._sleep.addInBlackList(interaction.user.id)
+      }
 
       this._logger.log('Finally: Member close ticket', `Member id: ${user.id}`, `Thread ID: ${thread.id}`)
     } catch (error) {
